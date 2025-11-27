@@ -11,7 +11,7 @@
     * { margin:0; padding:0; box-sizing:border-box; scroll-behavior: smooth; }
     body { font-family:'Poppins',sans-serif; background: #0f172a; min-height:100vh; color:#e2e8f0; overflow-x:hidden; }
     nav { background: rgba(9,26,46,0.92); backdrop-filter: blur(12px); border-bottom:1px solid rgba(255,255,255,0.1); position:fixed; width:100%; top:0; z-index:60; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-    .hero-section { min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; flex-direction:column; padding-top:82px; color:white; position:relative; overflow:hidden; background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
+    .hero-section { min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; flex-direction:column; padding-top:82px; color:white; position:relative; overflow:hidden; background: linear-gradient(135deg, rgba(15,23,42,0.8) 0%, rgba(30,41,59,0.8) 50%, rgba(15,23,42,0.8) 100%), url('background.gif'); background-size: cover; background-position: center; background-repeat: no-repeat; }
     .hero-title { font-size: clamp(2.2rem,5vw,3.8rem); font-weight:800; background: linear-gradient(135deg,#ffffff 0%, #f0f0f0 50%, #ff9933 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6)); }
     .hero-underline { width:190px; height:4px; margin:1rem auto 1.6rem; border-radius:8px; background: linear-gradient(90deg,#ff9933,#ffffff,#138808); animation: pulseLine 3s ease-in-out infinite; }
     @keyframes pulseLine { 0%,100%{transform:scaleX(1);opacity:.8} 50%{transform:scaleX(1.25);opacity:1} }
@@ -33,6 +33,14 @@
           <span class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Railway Translation Engine</span>
         </div>
         <div class="flex items-center space-x-6">
+          <select id="langSelect" onchange="translateIndexPage()" class="glass px-3 py-2 rounded-full text-white text-sm">
+            <option value="en">EN</option>
+            <option value="hi">हि</option>
+            <option value="kn">ಕನ್</option>
+            <option value="te">తె</option>
+            <option value="ta">த</option>
+            <option value="fr">FR</option>
+          </select>
           <a href="user.html" class="btn-primary px-6 py-2 rounded-full text-white font-semibold">User Portal</a>
           <a href="admin.html" class="glass px-6 py-2 rounded-full text-white font-semibold">Admin Panel</a>
         </div>
@@ -76,6 +84,54 @@
       <p class="text-gray-400">Railway Translation Engine © 2025 | Frontend Demo</p>
     </footer>
 
-  <script>lucide.createIcons();</script>
+  <script>
+    lucide.createIcons();
+    
+    async function translateText(text, targetLang) {
+      if (targetLang === 'en') return text;
+      
+      const API_KEY = 'AIzaSyDTq5NgWdbvI3znraPrASnogjGGD-uI3_E';
+      const langNames = {'hi':'Hindi','kn':'Kannada','te':'Telugu','ta':'Tamil','fr':'French'};
+      const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${API_KEY}`;
+      
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            contents: [{parts: [{text: `Translate this to ${langNames[targetLang]}: "${text}". Return only the translation, no explanations.`}]}]
+          })
+        });
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text.replace(/["]/g, '');
+      } catch (error) {
+        return text;
+      }
+    }
+    
+    async function translateIndexPage() {
+      const targetLang = document.getElementById('langSelect').value;
+      if (targetLang === 'en') {
+        location.reload();
+        return;
+      }
+      
+      const elementsToTranslate = document.querySelectorAll('h1, h2, h3, p, span, a');
+      
+      for (let element of elementsToTranslate) {
+        if (element.textContent.trim() && !element.querySelector('i') && element.textContent.length < 100) {
+          const originalText = element.textContent.trim();
+          if (originalText && !originalText.match(/^[0-9]+$/)) {
+            try {
+              const translatedText = await translateText(originalText, targetLang);
+              element.textContent = translatedText;
+            } catch (error) {
+              console.log('Translation failed for:', originalText);
+            }
+          }
+        }
+      }
+    }
+  </script>
 </body>
 </html>

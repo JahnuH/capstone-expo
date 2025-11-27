@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Poppins',sans-serif; background: linear-gradient(135deg, #1e293b, #0f172a, #1a202c); background-size: 400% 400%; animation: userGradient 25s ease-in-out infinite; color: #f1f5f9; overflow-x:hidden; }
@@ -162,6 +163,9 @@
                                         <div class="text-sm text-gray-300 mt-1">Arriving at Platform 3 at 14:30</div>
                                         <div class="text-xs text-gray-400 mt-2">2 minutes ago</div>
                                     </div>
+                                    <button onclick="speakResponse('Train 12628 Karnataka Express arriving at Platform 3 at 14:30')" class="text-blue-400 hover:text-blue-300">
+                                        <i data-lucide="volume-2" class="w-4 h-4"></i>
+                                    </button>
                                 </div>
                             </div>
                             <div class="announcement-card">
@@ -172,6 +176,9 @@
                                         <div class="text-sm text-gray-300 mt-1">Delayed by 15 minutes due to signal issues</div>
                                         <div class="text-xs text-gray-400 mt-2">5 minutes ago</div>
                                     </div>
+                                    <button onclick="speakResponse('Train 12430 Rajdhani Express delayed by 15 minutes due to signal issues')" class="text-red-400 hover:text-red-300">
+                                        <i data-lucide="volume-2" class="w-4 h-4"></i>
+                                    </button>
                                 </div>
                             </div>
                             <div class="announcement-card">
@@ -182,6 +189,9 @@
                                         <div class="text-sm text-gray-300 mt-1">Train 12301 now departing from Platform 5</div>
                                         <div class="text-xs text-gray-400 mt-2">8 minutes ago</div>
                                     </div>
+                                    <button onclick="speakResponse('Platform Change. Train 12301 now departing from Platform 5')" class="text-green-400 hover:text-green-300">
+                                        <i data-lucide="volume-2" class="w-4 h-4"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -215,6 +225,24 @@
 
                     <div class="glass-strong rounded-3xl p-6">
                         <h3 class="text-xl font-bold mb-4 flex items-center">
+                            <i data-lucide="languages" class="w-5 h-5 mr-2 text-purple-400"></i>
+                            <span>Language</span>
+                        </h3>
+                        <select id="languageSelect" onchange="changeLanguage()" class="w-full mb-4 px-3 py-2 rounded-lg text-white" style="background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(59, 130, 246, 0.3);">
+                            <option value="en">English</option>
+                            <option value="hi">हिंदी (Hindi)</option>
+                            <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                            <option value="te">తెలుగు (Telugu)</option>
+                            <option value="ta">தமிழ் (Tamil)</option>
+                            <option value="fr">Français (French)</option>
+                        </select>
+                        <button onclick="translatePage()" class="w-full btn-gradient px-4 py-2 rounded-lg text-white font-semibold mb-2">
+                            <i data-lucide="globe" class="w-4 h-4 inline mr-2"></i>Translate Page
+                        </button>
+                    </div>
+                    
+                    <div class="glass-strong rounded-3xl p-6">
+                        <h3 class="text-xl font-bold mb-4 flex items-center">
                             <i data-lucide="zap" class="w-5 h-5 mr-2 text-yellow-400"></i>
                             <span>Quick Access</span>
                         </h3>
@@ -244,13 +272,22 @@
                 <h2 class="text-2xl font-bold text-white">IVRS System</h2>
                 <button onclick="closeIVRS()" class="text-3xl text-gray-400 hover:text-white">&times;</button>
             </div>
+            <div class="mb-4 p-3 rounded-xl text-center" style="background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4);">
+                <div class="text-xs text-gray-400 mb-1">Dialed</div>
+                <div id="dialedNumber" class="text-2xl font-bold text-white tracking-widest">-</div>
+            </div>
             <div id="ivrsDisplay" class="mb-6 p-4 rounded-xl min-h-32" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(59, 130, 246, 0.3);">
-                <p class="text-white">Welcome to Railway IVRS. Press:</p>
-                <p class="text-gray-300 mt-2">1 - Train Status</p>
-                <p class="text-gray-300">2 - Platform Info</p>
-                <p class="text-gray-300">3 - Ticket Booking</p>
-                <p class="text-gray-300">4 - Lost & Found</p>
-                <p class="text-gray-300">0 - Speak to Operator</p>
+                <p class="text-white font-semibold mb-3">Welcome to Railway IVRS</p>
+                <div id="menuOptions">
+                    <p class="text-gray-300 text-sm mb-1">📞 Press 1 - Train Status</p>
+                    <p class="text-gray-300 text-sm mb-1">📞 Press 2 - Platform Info</p>
+                    <p class="text-gray-300 text-sm mb-1">📞 Press 3 - Ticket Booking</p>
+                    <p class="text-gray-300 text-sm mb-1">📞 Press 4 - Lost & Found</p>
+                    <p class="text-gray-300 text-sm mb-1">📞 Press 5 - Station Facilities</p>
+                    <p class="text-gray-300 text-sm mb-1">📞 Press 6 - Emergency Services</p>
+                    <p class="text-gray-300 text-sm mb-1">📞 Press 9 - Main Menu</p>
+                    <p class="text-gray-300 text-sm">📞 Press 0 - Speak to Operator</p>
+                </div>
             </div>
             <div class="grid grid-cols-3 gap-3">
                 <button onclick="pressIVRS('1')" class="keypad-btn px-4 py-3 rounded-xl font-bold text-xl">1</button>
@@ -347,6 +384,9 @@
             </div>
             <div class="flex space-x-3">
                 <input id="chatInput" placeholder="Type your message..." class="flex-1 px-4 py-3 rounded-xl text-white" style="background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(59, 130, 246, 0.3);">
+                <button id="micBtn" onclick="toggleSpeechRecognition()" class="glass-strong px-4 py-3 text-white rounded-xl" title="Voice Input">
+                    <i data-lucide="mic" class="w-5 h-5"></i>
+                </button>
                 <button onclick="sendMessage()" class="btn-gradient px-6 py-3 text-white font-semibold rounded-xl">Send</button>
             </div>
         </div>
@@ -379,32 +419,190 @@
             
             input.value = '';
             
-            setTimeout(() => {
-                const responses = [
-                    "Train 12628 Karnataka Express is on time and will arrive at Platform 3 at 14:30.",
-                    "The next train to Bangalore departs at 16:45 from Platform 1.",
-                    "Platform facilities include waiting rooms, restrooms, and food stalls.",
-                    "You can find the ticket counter on the ground floor near entrance 2."
-                ];
-                const response = responses[Math.floor(Math.random() * responses.length)];
+            getGeminiResponse(msg).then(response => {
                 chatMessages.innerHTML += `
                     <div class="flex items-start space-x-2">
                         <div class="bg-blue-500 bg-opacity-20 border border-blue-400 rounded-lg p-3 max-w-xs">
                             <p class="text-sm text-white">${response}</p>
+                            <button onclick='speakResponse("${response.replace(/"/g, '&quot;')}")' class="mt-2 text-xs text-blue-300 hover:text-blue-100 flex items-center space-x-1">
+                                <i data-lucide="volume-2" class="w-3 h-3"></i><span>Listen</span>
+                            </button>
                         </div>
                     </div>
                 `;
                 chatMessages.scrollTop = chatMessages.scrollHeight;
-            }, 500);
+                lucide.createIcons();
+                speakResponse(response);
+            }).catch(error => {
+                const fallbackResponse = "I'm here to help with railway information. Please try asking about train schedules, platform details, or station facilities.";
+                chatMessages.innerHTML += `
+                    <div class="flex items-start space-x-2">
+                        <div class="bg-blue-500 bg-opacity-20 border border-blue-400 rounded-lg p-3 max-w-xs">
+                            <p class="text-sm text-white">${fallbackResponse}</p>
+                            <button onclick="speakResponse('${fallbackResponse}')" class="mt-2 text-xs text-blue-300 hover:text-blue-100 flex items-center space-x-1">
+                                <i data-lucide="volume-2" class="w-3 h-3"></i><span>Listen</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                lucide.createIcons();
+                speakResponse(fallbackResponse);
+            });
         }
         
         document.getElementById('chatInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') sendMessage();
         });
         
+        let recognition;
+        let isListening = false;
+        
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('chatInput').value = transcript;
+                    sendMessage();
+                };
+                
+                recognition.onend = function() {
+                    isListening = false;
+                    document.getElementById('micBtn').innerHTML = '<i data-lucide="mic" class="w-5 h-5"></i>';
+                    lucide.createIcons();
+                };
+            }
+        }
+        
+        function toggleSpeechRecognition() {
+            if (!recognition) initSpeechRecognition();
+            
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+                isListening = true;
+                document.getElementById('micBtn').innerHTML = '<i data-lucide="mic-off" class="w-5 h-5"></i>';
+                lucide.createIcons();
+            }
+        }
+        
+        let currentLanguage = 'en-US';
+        let currentTranslateLanguage = 'en';
+        
+        function changeLanguage() {
+            const langSelect = document.getElementById('languageSelect').value;
+            currentTranslateLanguage = langSelect;
+            
+            const speechLangMap = {
+                'en': 'en-US',
+                'hi': 'hi-IN',
+                'kn': 'kn-IN',
+                'te': 'te-IN',
+                'ta': 'ta-IN',
+                'fr': 'fr-FR'
+            };
+            
+            currentLanguage = speechLangMap[langSelect];
+            if (recognition) {
+                recognition.lang = currentLanguage;
+            }
+        }
+        
+        async function translateText(text, targetLang) {
+            if (targetLang === 'en') return text;
+            
+            const API_KEY = 'AIzaSyDTq5NgWdbvI3znraPrASnogjGGD-uI3_E';
+            const langNames = {'hi':'Hindi','kn':'Kannada','te':'Telugu','ta':'Tamil','fr':'French'};
+            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${API_KEY}`;
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        contents: [{parts: [{text: `Translate this to ${langNames[targetLang]}: "${text}". Return only the translation, no explanations.`}]}]
+                    })
+                });
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text.replace(/["]/g, '');
+            } catch (error) {
+                return text;
+            }
+        }
+        
+        async function translatePage() {
+            if (currentTranslateLanguage === 'en') return;
+            
+            const elementsToTranslate = document.querySelectorAll('h1, h2, h3, p, span, div, button, option');
+            
+            for (let element of elementsToTranslate) {
+                if (element.textContent.trim() && !element.querySelector('i') && element.textContent.length < 200) {
+                    const originalText = element.textContent.trim();
+                    if (originalText && !originalText.match(/^[0-9:]+$/)) {
+                        try {
+                            const translatedText = await translateText(originalText, currentTranslateLanguage);
+                            element.textContent = translatedText;
+                        } catch (error) {
+                            console.log('Translation failed for:', originalText);
+                        }
+                    }
+                }
+            }
+        }
+        
+        function speakResponse(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = currentLanguage;
+            utterance.rate = 0.9;
+            speechSynthesis.speak(utterance);
+        }
+        
+        async function getGeminiResponse(message) {
+            const API_KEY = 'AIzaSyDTq5NgWdbvI3znraPrASnogjGGD-uI3_E';
+            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${API_KEY}`;
+            
+            const prompt = `You are a helpful railway station assistant. Answer questions about trains, schedules, platforms, and station facilities. Keep responses concise and helpful. User question: ${message}`;
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: prompt
+                            }]
+                        }]
+                    })
+                });
+                
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                throw error;
+            }
+        }
+        
+        initSpeechRecognition();
+        
         function openIVRS() {
             document.getElementById('ivrsModal').classList.add('active');
+            document.getElementById('dialedNumber').textContent = '-';
             lucide.createIcons();
+            
+            const welcomeMsg = 'Welcome to Railway IVRS. Press 1 for Train Status, 2 for Platform Info, 3 for Ticket Booking, 4 for Lost and Found, 5 for Station Facilities, 6 for Emergency Services, 9 for Main Menu, 0 to Speak to Operator';
+            const utterance = new SpeechSynthesisUtterance(welcomeMsg);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8;
+            speechSynthesis.speak(utterance);
         }
         
         function closeIVRS() {
@@ -412,15 +610,39 @@
         }
         
         function pressIVRS(key) {
+            document.getElementById('dialedNumber').textContent = key;
+            
             const display = document.getElementById('ivrsDisplay');
             const responses = {
-                '1': '<p class="text-white">Train Status Service</p><p class="text-gray-300 mt-2">All trains are running as per schedule. Train 12430 is delayed by 15 minutes.</p>',
-                '2': '<p class="text-white">Platform Information</p><p class="text-gray-300 mt-2">Platform 1-6 are operational. Platform 3 is under maintenance.</p>',
-                '3': '<p class="text-white">Ticket Booking</p><p class="text-gray-300 mt-2">Please visit www.irctc.co.in or use the mobile app for ticket booking.</p>',
-                '4': '<p class="text-white">Lost & Found</p><p class="text-gray-300 mt-2">Lost items can be reported at the station master office on Platform 1.</p>',
-                '0': '<p class="text-white">Connecting to Operator...</p><p class="text-gray-300 mt-2">Please wait while we connect you to our customer service representative.</p>'
+                '1': '<p class="text-white font-semibold mb-3">Train Status Service</p><p class="text-gray-300 text-sm">All trains are running as per schedule. Train 12430 is delayed by 15 minutes.</p><div class="mt-4 pt-3 border-t border-gray-600"><p class="text-xs text-gray-400 mb-2">Available Options:</p><p class="text-gray-300 text-sm">📞 Press 9 - Main Menu</p><p class="text-gray-300 text-sm">📞 Press 0 - Operator</p></div>',
+                '2': '<p class="text-white font-semibold mb-3">Platform Information</p><p class="text-gray-300 text-sm">Platform 1-6 are operational. Platform 3 is under maintenance.</p><div class="mt-4 pt-3 border-t border-gray-600"><p class="text-xs text-gray-400 mb-2">Available Options:</p><p class="text-gray-300 text-sm">📞 Press 9 - Main Menu</p><p class="text-gray-300 text-sm">📞 Press 0 - Operator</p></div>',
+                '3': '<p class="text-white font-semibold mb-3">Ticket Booking</p><p class="text-gray-300 text-sm">Please visit www.irctc.co.in or use the mobile app for ticket booking.</p><div class="mt-4 pt-3 border-t border-gray-600"><p class="text-xs text-gray-400 mb-2">Available Options:</p><p class="text-gray-300 text-sm">📞 Press 9 - Main Menu</p><p class="text-gray-300 text-sm">📞 Press 0 - Operator</p></div>',
+                '4': '<p class="text-white font-semibold mb-3">Lost & Found</p><p class="text-gray-300 text-sm">Lost items can be reported at the station master office on Platform 1.</p><div class="mt-4 pt-3 border-t border-gray-600"><p class="text-xs text-gray-400 mb-2">Available Options:</p><p class="text-gray-300 text-sm">📞 Press 9 - Main Menu</p><p class="text-gray-300 text-sm">📞 Press 0 - Operator</p></div>',
+                '5': '<p class="text-white font-semibold mb-3">Station Facilities</p><p class="text-gray-300 text-sm">Food court, waiting rooms, restrooms, and medical facilities available.</p><div class="mt-4 pt-3 border-t border-gray-600"><p class="text-xs text-gray-400 mb-2">Available Options:</p><p class="text-gray-300 text-sm">📞 Press 9 - Main Menu</p><p class="text-gray-300 text-sm">📞 Press 0 - Operator</p></div>',
+                '6': '<p class="text-white font-semibold mb-3">Emergency Services</p><p class="text-gray-300 text-sm">Railway Police: 182 | Medical Emergency: 108 | Helpline: 139</p><div class="mt-4 pt-3 border-t border-gray-600"><p class="text-xs text-gray-400 mb-2">Available Options:</p><p class="text-gray-300 text-sm">📞 Press 9 - Main Menu</p><p class="text-gray-300 text-sm">📞 Press 0 - Operator</p></div>',
+                '9': '<p class="text-white font-semibold mb-3">Main Menu</p><div id="menuOptions"><p class="text-gray-300 text-sm mb-1">📞 Press 1 - Train Status</p><p class="text-gray-300 text-sm mb-1">📞 Press 2 - Platform Info</p><p class="text-gray-300 text-sm mb-1">📞 Press 3 - Ticket Booking</p><p class="text-gray-300 text-sm mb-1">📞 Press 4 - Lost & Found</p><p class="text-gray-300 text-sm mb-1">📞 Press 5 - Station Facilities</p><p class="text-gray-300 text-sm mb-1">📞 Press 6 - Emergency Services</p><p class="text-gray-300 text-sm">📞 Press 0 - Operator</p></div>',
+                '0': '<p class="text-white font-semibold mb-3">Connecting to Operator...</p><p class="text-gray-300 text-sm">Please wait while we connect you to our customer service representative.</p><div class="mt-4 pt-3 border-t border-gray-600"><p class="text-xs text-gray-400 mb-2">Available Options:</p><p class="text-gray-300 text-sm">📞 Press 9 - Main Menu</p></div>'
             };
-            display.innerHTML = responses[key] || '<p class="text-white">Invalid option. Please try again.</p>';
+            
+            const audioResponses = {
+                '1': 'Train Status Service. All trains are running as per schedule. Train 12430 is delayed by 15 minutes. Press 9 for main menu or 0 for operator.',
+                '2': 'Platform Information. Platform 1 to 6 are operational. Platform 3 is under maintenance. Press 9 for main menu or 0 for operator.',
+                '3': 'Ticket Booking. Please visit www.irctc.co.in or use the mobile app for ticket booking. Press 9 for main menu or 0 for operator.',
+                '4': 'Lost and Found. Lost items can be reported at the station master office on Platform 1. Press 9 for main menu or 0 for operator.',
+                '5': 'Station Facilities. Food court, waiting rooms, restrooms, and medical facilities available. Press 9 for main menu or 0 for operator.',
+                '6': 'Emergency Services. Railway Police 182, Medical Emergency 108, Helpline 139. Press 9 for main menu or 0 for operator.',
+                '9': 'Main Menu. Press 1 for Train Status, 2 for Platform Info, 3 for Ticket Booking, 4 for Lost and Found, 5 for Station Facilities, 6 for Emergency Services, 0 for Operator.',
+                '0': 'Connecting to Operator. Please wait while we connect you to our customer service representative.'
+            };
+            
+            display.innerHTML = responses[key] || '<p class="text-white">Invalid option. Please try again.</p><div class="mt-4 pt-3 border-t border-gray-600"><p class="text-xs text-gray-400 mb-2">Available Options:</p><p class="text-gray-300 text-sm">📞 Press 9 - Main Menu</p></div>';
+            
+            if (audioResponses[key]) {
+                const utterance = new SpeechSynthesisUtterance(audioResponses[key]);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            }
         }
         
         function openSOS() {
