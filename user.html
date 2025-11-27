@@ -31,6 +31,16 @@
         .keypad-btn { background: rgba(37, 99, 235, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #f1f5f9; transition: all 0.3s ease; }
         .keypad-btn:hover { background: rgba(37, 99, 235, 0.3); border-color: rgba(59, 130, 246, 0.5); transform: scale(1.05); }
         .stops-row { background: rgba(15, 25, 45, 0.5); padding: 1rem; border-radius: 0.5rem; margin-top: 0.5rem; }
+        @media (max-width: 768px) {
+            nav .container { padding: 0.75rem !important; }
+            nav .text-2xl { font-size: 1.25rem !important; }
+            .marquee { top: 65px; font-size: 0.8rem; }
+            .pt-32 { padding-top: 7rem !important; }
+            .modal-content { padding: 1rem; max-width: 95%; }
+            table { font-size: 0.75rem; }
+            .grid { gap: 0.75rem; }
+            .glass-strong { padding: 1rem !important; }
+        }
     </style>
 </head>
 <body>
@@ -514,46 +524,67 @@
             }
         }
         
+        const translations = {
+            'hi': {
+                'Railway Translation Engine': 'रेलवे अनुवाद इंजन',
+                'Breaking Language Barriers in Public Transportation': 'सार्वजनिक परिवहन में भाषा बाधाओं को तोड़ना',
+                'Real-time multilingual announcements powered by AI': 'एआई द्वारा संचालित वास्तविक समय बहुभाषी घोषणाएं'
+            },
+            'kn': {
+                'Railway Translation Engine': 'ರೈಲ್ವೆ ಅನುವಾದ ಎಂಜಿನ್',
+                'Breaking Language Barriers in Public Transportation': 'ಸಾರ್ವಜನಿಕ ಸಾರಿಗೆಯಲ್ಲಿ ಭಾಷಾ ತಡೆಗಳನ್ನು ಮುರಿಯುವುದು',
+                'Real-time multilingual announcements powered by AI': 'AI ನಿಂದ ನಡೆಸಲ್ಪಡುವ ನೈಜ-ಸಮಯದ ಬಹುಭಾಷಾ ಘೋಷಣೆಗಳು'
+            },
+            'te': {
+                'Railway Translation Engine': 'రైల్వే అనువాద ఇంజిన్',
+                'Breaking Language Barriers in Public Transportation': 'ప్రజా రవాణాలో భాషా అడ్డంకులను తొలగించడం',
+                'Real-time multilingual announcements powered by AI': 'AI ద్వారా నడిచే నిజ-సమయ బహుభాషా ప్రకటనలు'
+            },
+            'ta': {
+                'Railway Translation Engine': 'ரயில்வே மொழிபெயர்ப்பு இயந்திரம்',
+                'Breaking Language Barriers in Public Transportation': 'பொது போக்குவரத்தில் மொழி தடைகளை உடைத்தல்',
+                'Real-time multilingual announcements powered by AI': 'AI மூலம் இயக்கப்படும் நேரடி பன்மொழி அறிவிப்புகள்'
+            },
+            'fr': {
+                'Railway Translation Engine': 'Moteur de traduction ferroviaire',
+                'Breaking Language Barriers in Public Transportation': 'Briser les barrières linguistiques dans les transports publics',
+                'Real-time multilingual announcements powered by AI': 'Annonces multilingues en temps réel alimentées par IA'
+            }
+        };
+        
         async function translateText(text, targetLang) {
             if (targetLang === 'en') return text;
-            
-            const API_KEY = 'AIzaSyDTq5NgWdbvI3znraPrASnogjGGD-uI3_E';
-            const langNames = {'hi':'Hindi','kn':'Kannada','te':'Telugu','ta':'Tamil','fr':'French'};
-            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${API_KEY}`;
-            
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        contents: [{parts: [{text: `Translate this to ${langNames[targetLang]}: "${text}". Return only the translation, no explanations.`}]}]
-                    })
-                });
-                const data = await response.json();
-                return data.candidates[0].content.parts[0].text.replace(/["]/g, '');
-            } catch (error) {
-                return text;
-            }
+            return translations[targetLang]?.[text] || text;
         }
         
         async function translatePage() {
-            if (currentTranslateLanguage === 'en') return;
+            if (currentTranslateLanguage === 'en') {
+                location.reload();
+                return;
+            }
             
-            const elementsToTranslate = document.querySelectorAll('h1, h2, h3, p, span, div, button, option');
+            const button = event.target;
+            button.textContent = 'Translating...';
+            button.disabled = true;
             
-            for (let element of elementsToTranslate) {
-                if (element.textContent.trim() && !element.querySelector('i') && element.textContent.length < 200) {
-                    const originalText = element.textContent.trim();
-                    if (originalText && !originalText.match(/^[0-9:]+$/)) {
-                        try {
-                            const translatedText = await translateText(originalText, currentTranslateLanguage);
-                            element.textContent = translatedText;
-                        } catch (error) {
-                            console.log('Translation failed for:', originalText);
-                        }
-                    }
+            const textsToTranslate = [
+                {el: document.querySelector('.hero-title'), text: 'Railway Translation Engine'},
+                {el: document.querySelector('.hero-section p:nth-of-type(1)'), text: 'Breaking Language Barriers in Public Transportation'},
+                {el: document.querySelector('.hero-section p:nth-of-type(2)'), text: 'Real-time multilingual announcements powered by AI'}
+            ];
+            
+            for (let item of textsToTranslate) {
+                if (item.el) {
+                    try {
+                        const translated = await translateText(item.text, currentTranslateLanguage);
+                        item.el.textContent = translated;
+                    } catch (e) {}
                 }
             }
+            
+            button.textContent = 'Translate Page';
+            button.disabled = false;
+            lucide.createIcons();
         }
         
         function speakResponse(text) {

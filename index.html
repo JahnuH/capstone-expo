@@ -11,7 +11,17 @@
     * { margin:0; padding:0; box-sizing:border-box; scroll-behavior: smooth; }
     body { font-family:'Poppins',sans-serif; background: #0f172a; min-height:100vh; color:#e2e8f0; overflow-x:hidden; }
     nav { background: rgba(9,26,46,0.92); backdrop-filter: blur(12px); border-bottom:1px solid rgba(255,255,255,0.1); position:fixed; width:100%; top:0; z-index:60; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-    .hero-section { min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; flex-direction:column; padding-top:82px; color:white; position:relative; overflow:hidden; background: linear-gradient(135deg, rgba(15,23,42,0.8) 0%, rgba(30,41,59,0.8) 50%, rgba(15,23,42,0.8) 100%), url('background.gif'); background-size: cover; background-position: center; background-repeat: no-repeat; }
+    .hero-section { min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; flex-direction:column; padding:82px 1rem 2rem; color:white; position:relative; overflow:hidden; }
+    .hero-section::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(15,23,42,0.8) 0%, rgba(30,41,59,0.8) 50%, rgba(15,23,42,0.8) 100%); z-index: 1; }
+    .hero-section > * { position: relative; z-index: 2; }
+    #bgVideo { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+    @media (max-width: 768px) {
+      .hero-section { padding-top: 100px; background-attachment: scroll; }
+      nav .container { padding: 1rem !important; }
+      nav .flex { flex-wrap: wrap; gap: 0.5rem; }
+      .hero-title { font-size: 2rem !important; }
+      .hero-underline { width: 120px; }
+    }
     .hero-title { font-size: clamp(2.2rem,5vw,3.8rem); font-weight:800; background: linear-gradient(135deg,#ffffff 0%, #f0f0f0 50%, #ff9933 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6)); }
     .hero-underline { width:190px; height:4px; margin:1rem auto 1.6rem; border-radius:8px; background: linear-gradient(90deg,#ff9933,#ffffff,#138808); animation: pulseLine 3s ease-in-out infinite; }
     @keyframes pulseLine { 0%,100%{transform:scaleX(1);opacity:.8} 50%{transform:scaleX(1.25);opacity:1} }
@@ -48,6 +58,9 @@
     </nav>
 
     <section class="hero-section">
+      <video id="bgVideo" autoplay loop muted playsinline>
+        <source src="https://drive.google.com/uc?export=download&id=1rxAtO0k6iv-E_AJ7vchuJ1Tcn5HmSGEV" type="video/mp4">
+      </video>
       <div class="container mx-auto text-center relative">
         <h1 class="hero-title mb-6">Railway Translation Engine</h1>
         <div class="hero-underline"></div>
