@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passenger Portal - Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Poppins',sans-serif; background: linear-gradient(135deg, #1e293b, #0f172a, #1a202c); background-size: 400% 400%; animation: userGradient 25s ease-in-out infinite; color: #f1f5f9; overflow-x:hidden; }
+        @keyframes userGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        nav { background: rgba(9,26,46,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.15); color: white; position:fixed; width:100%; top:0; z-index:50; }
+        .glass-strong { background: rgba(15, 25, 45, 0.92); backdrop-filter: blur(14px); border: 1px solid rgba(0, 198, 255, 0.25); box-shadow: 0 0 25px rgba(0, 198, 255, 0.1); }
+        .btn-gradient { background: linear-gradient(90deg, #2563eb, #f97316); color: #fff; box-shadow: 0 0 18px rgba(37, 99, 235, 0.35); transition: all 0.3s ease; }
+        .btn-gradient:hover { transform: scale(1.03); box-shadow: 0 0 28px rgba(37, 99, 235, 0.6); }
+        .info-card { background: rgba(25, 35, 60, 0.9); border: 1px solid rgba(0, 198, 255, 0.25); color: #f9fafb; box-shadow: 0 0 15px rgba(0, 198, 255, 0.15); transition: all 0.4s ease; }
+        .info-card:hover { background: rgba(37, 99, 235, 0.25); transform: translateY(-3px); box-shadow: 0 0 25px rgba(37, 99, 235, 0.4); }
+        .train-board-row { background: rgba(255, 255, 255, 0.06); border-bottom: 1px solid rgba(255, 255, 255, 0.15); transition: all 0.3s ease; }
+        .train-board-row:hover { background: linear-gradient(90deg, rgba(37,99,235,0.25), rgba(249,115,22,0.2)); box-shadow: 0 0 15px rgba(0,198,255,0.25); transform: translateY(-2px); }
+        .announcement-card { border: 1px solid rgba(59, 130, 246, 0.3); background: rgba(255, 255, 255, 0.25); padding: 1rem; border-radius: 0.75rem; margin-bottom: 0.75rem; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: none; align-items: center; justify-content: center; padding: 1rem; z-index: 9999; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(10px); }
+        .modal.active { display: flex; }
+        .modal-content { background: rgba(10, 20, 35, 0.96); border: 1px solid rgba(0, 198, 255, 0.25); box-shadow: 0 0 35px rgba(0, 198, 255, 0.25); border-radius: 1.5rem; padding: 2rem; max-width: 600px; width: 100%; }
+        .marquee { position: fixed; top: 72px; left: 0; right: 0; z-index: 40; background: linear-gradient(90deg, #dc2626, #ea580c, #dc2626); border-bottom: 2px solid rgba(255, 255, 255, 0.3); overflow: hidden; height: 40px; display: flex; align-items: center; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4); }
+        .marquee-content { display: flex; align-items: center; white-space: nowrap; animation: marquee 25s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
+        .marquee-text { color: #ffffff; font-weight: 600; font-size: 0.95rem; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); }
+        .keypad-btn { background: rgba(37, 99, 235, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); color: #f1f5f9; transition: all 0.3s ease; }
+        .keypad-btn:hover { background: rgba(37, 99, 235, 0.3); border-color: rgba(59, 130, 246, 0.5); transform: scale(1.05); }
+        .stops-row { background: rgba(15, 25, 45, 0.5); padding: 1rem; border-radius: 0.5rem; margin-top: 0.5rem; }
+    </style>
+</head>
+<body>
+    <nav class="fixed w-full top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <a href="index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                        <i data-lucide="train" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Railway Translation Engine</span>
+                        <p class="text-xs text-gray-400">Passenger Portal</p>
+                    </div>
+                </a>
+                <div class="flex items-center space-x-4">
+                    <button onclick="openChatbot()" class="btn-gradient px-4 py-2 rounded-full text-white font-semibold flex items-center space-x-2">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i><span>Chatbot</span>
+                    </button>
+                    <button onclick="openIVRS()" class="btn-gradient px-4 py-2 rounded-full text-white font-semibold flex items-center space-x-2">
+                        <i data-lucide="phone" class="w-4 h-4"></i><span>IVRS</span>
+                    </button>
+                    <a href="index.html" class="glass-strong px-4 py-2 rounded-full text-white hover:bg-red-500 hover:bg-opacity-20">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="marquee">
+        <div class="marquee-content">
+            <span class="marquee-text">⚠️ Platform 3 temporarily closed for maintenance • 🚨 Please maintain social distancing • 📢 Free WiFi available at all platforms • ☎️ Emergency helpline: 139 (24x7) •</span>
+        </div>
+    </div>
+
+    <div class="relative z-10 pt-32 pb-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="info-card glass-strong rounded-2xl p-6 text-center">
+                    <i data-lucide="train" class="w-8 h-8 mx-auto mb-2 text-blue-400"></i>
+                    <div class="text-2xl font-bold">5</div>
+                    <div class="text-sm text-gray-400">Tracked</div>
+                </div>
+                <div class="info-card glass-strong rounded-2xl p-6 text-center">
+                    <i data-lucide="check-circle" class="w-8 h-8 mx-auto mb-2 text-green-400"></i>
+                    <div class="text-2xl font-bold text-green-400">3</div>
+                    <div class="text-sm text-gray-400">On Time</div>
+                </div>
+                <div class="info-card glass-strong rounded-2xl p-6 text-center">
+                    <i data-lucide="alert-triangle" class="w-8 h-8 mx-auto mb-2 text-red-400"></i>
+                    <div class="text-2xl font-bold text-red-400">2</div>
+                    <div class="text-sm text-gray-400">Delayed</div>
+                </div>
+                <div class="info-card glass-strong rounded-2xl p-6 text-center">
+                    <i data-lucide="megaphone" class="w-8 h-8 mx-auto mb-2 text-yellow-400"></i>
+                    <div class="text-2xl font-bold">12</div>
+                    <div class="text-sm text-gray-400">Updates</div>
+                </div>
+            </div>
+
+            <div class="glass-strong rounded-3xl p-8 mb-8">
+                <h2 class="text-3xl font-bold mb-6 flex items-center">
+                    <i data-lucide="train" class="w-8 h-8 mr-3 text-blue-400"></i>
+                    <span>Live Train Board</span>
+                </h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full">
+                        <thead class="glass">
+                            <tr>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-300">Train</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-300">Route</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-300">Time</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-300">Platform</th>
+                                <th class="px-6 py-4 text-center text-sm font-semibold text-gray-300">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trainBoard">
+                            <tr class="train-board-row cursor-pointer" onclick="toggleStops('train1')">
+                                <td class="px-6 py-4 text-center"><div class="font-bold text-white">12628</div><div class="text-sm text-gray-300">Karnataka Express</div></td>
+                                <td class="px-6 py-4 text-center text-gray-300">New Delhi → Bangalore</td>
+                                <td class="px-6 py-4 text-center text-white font-semibold">14:30</td>
+                                <td class="px-6 py-4 text-center"><span class="px-3 py-1 rounded-full text-sm font-semibold" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">Platform 3</span></td>
+                                <td class="px-6 py-4 text-center"><span class="px-3 py-1 rounded-full text-sm font-semibold" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">On Time</span></td>
+                            </tr>
+                            <tr id="train1" class="stops-row" style="display:none;">
+                                <td colspan="5" class="px-6 py-4">
+                                    <div class="text-sm text-white font-semibold mb-2">Route Stops:</div>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between"><span class="text-green-400">✓ New Delhi</span><span class="text-gray-400">Departed 08:00</span></div>
+                                        <div class="flex justify-between"><span class="text-green-400">✓ Agra</span><span class="text-gray-400">Departed 11:30</span></div>
+                                        <div class="flex justify-between"><span class="text-yellow-400">▶ Bhopal</span><span class="text-gray-400">Current 14:30</span></div>
+                                        <div class="flex justify-between"><span class="text-gray-400">○ Nagpur</span><span class="text-gray-400">Expected 19:45</span></div>
+                                        <div class="flex justify-between"><span class="text-gray-400">○ Bangalore</span><span class="text-gray-400">Expected 06:00</span></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="train-board-row">
+                                <td class="px-6 py-4 text-center"><div class="font-bold text-white">12430</div><div class="text-sm text-gray-300">Rajdhani Express</div></td>
+                                <td class="px-6 py-4 text-center text-gray-300">Mumbai → Delhi</td>
+                                <td class="px-6 py-4 text-center text-white font-semibold">16:45</td>
+                                <td class="px-6 py-4 text-center"><span class="px-3 py-1 rounded-full text-sm font-semibold" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">Platform 1</span></td>
+                                <td class="px-6 py-4 text-center"><span class="px-3 py-1 rounded-full text-sm font-semibold" style="background: rgba(239, 68, 68, 0.2); color: #fb7185;">Delayed 15 min</span></td>
+                            </tr>
+                            <tr class="train-board-row">
+                                <td class="px-6 py-4 text-center"><div class="font-bold text-white">12301</div><div class="text-sm text-gray-300">Howrah Rajdhani</div></td>
+                                <td class="px-6 py-4 text-center text-gray-300">Kolkata → Delhi</td>
+                                <td class="px-6 py-4 text-center text-white font-semibold">18:20</td>
+                                <td class="px-6 py-4 text-center"><span class="px-3 py-1 rounded-full text-sm font-semibold" style="background: rgba(59, 130, 246, 0.2); color: #93c5fd;">Platform 5</span></td>
+                                <td class="px-6 py-4 text-center"><span class="px-3 py-1 rounded-full text-sm font-semibold" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">On Time</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <div class="glass-strong rounded-3xl p-8">
+                        <h2 class="text-2xl font-bold mb-6 flex items-center">
+                            <i data-lucide="megaphone" class="w-5 h-5 mr-2 text-orange-400"></i>
+                            <span>Live Updates</span>
+                        </h2>
+                        <div id="announcementFeed" class="space-y-4">
+                            <div class="announcement-card">
+                                <div class="flex items-start space-x-3">
+                                    <i data-lucide="train" class="w-5 h-5 text-blue-400 mt-1"></i>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-white">Train 12628 Karnataka Express</div>
+                                        <div class="text-sm text-gray-300 mt-1">Arriving at Platform 3 at 14:30</div>
+                                        <div class="text-xs text-gray-400 mt-2">2 minutes ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="announcement-card">
+                                <div class="flex items-start space-x-3">
+                                    <i data-lucide="alert-triangle" class="w-5 h-5 text-red-400 mt-1"></i>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-white">Train 12430 Rajdhani Express</div>
+                                        <div class="text-sm text-gray-300 mt-1">Delayed by 15 minutes due to signal issues</div>
+                                        <div class="text-xs text-gray-400 mt-2">5 minutes ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="announcement-card">
+                                <div class="flex items-start space-x-3">
+                                    <i data-lucide="info" class="w-5 h-5 text-green-400 mt-1"></i>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-white">Platform Change</div>
+                                        <div class="text-sm text-gray-300 mt-1">Train 12301 now departing from Platform 5</div>
+                                        <div class="text-xs text-gray-400 mt-2">8 minutes ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="glass-strong rounded-3xl p-6">
+                        <h3 class="text-xl font-bold mb-4 flex items-center">
+                            <i data-lucide="building-2" class="w-5 h-5 mr-2 text-blue-400"></i>
+                            <span>Station Info</span>
+                            <button onclick="openRules()" class="ml-2 text-gray-400 hover:text-blue-400 transition">
+                                <i data-lucide="info" class="w-5 h-5"></i>
+                            </button>
+                        </h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-start space-x-3">
+                                <i data-lucide="utensils" class="w-5 h-5 text-orange-400"></i>
+                                <div><div class="font-semibold text-white">Food Court</div><div class="text-gray-400 text-xs">Main Concourse</div></div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <i data-lucide="hospital" class="w-5 h-5 text-pink-400"></i>
+                                <div><div class="font-semibold text-white">Medical Room</div><div class="text-gray-400 text-xs">Platform 1</div></div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <i data-lucide="droplet" class="w-5 h-5 text-cyan-400"></i>
+                                <div><div class="font-semibold text-white">Water Stations</div><div class="text-gray-400 text-xs">Every Platform</div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-strong rounded-3xl p-6">
+                        <h3 class="text-xl font-bold mb-4 flex items-center">
+                            <i data-lucide="zap" class="w-5 h-5 mr-2 text-yellow-400"></i>
+                            <span>Quick Access</span>
+                        </h3>
+                        <div class="space-y-3">
+                            <button onclick="openChatbot()" class="w-full glass-strong hover:bg-blue-500 hover:bg-opacity-20 px-4 py-3 rounded-xl text-left transition flex items-center space-x-3">
+                                <i data-lucide="message-circle" class="w-5 h-5 text-blue-400"></i>
+                                <div><div class="font-semibold text-sm">Ask Assistant</div><div class="text-gray-400 text-xs">Get instant help</div></div>
+                            </button>
+                            <button onclick="openIVRS()" class="w-full glass-strong hover:bg-green-500 hover:bg-opacity-20 px-4 py-3 rounded-xl text-left transition flex items-center space-x-3">
+                                <i data-lucide="phone" class="w-5 h-5 text-green-400"></i>
+                                <div><div class="font-semibold text-sm">Call IVRS</div><div class="text-gray-400 text-xs">Voice menu system</div></div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button onclick="openSOS()" class="fixed bottom-6 right-6 w-16 h-16 bg-red-600 hover:bg-red-700 rounded-full shadow-2xl flex items-center justify-center z-50 transition-all duration-300" style="animation: pulse 2s ease-in-out infinite; box-shadow: 0 0 30px rgba(239, 68, 68, 0.6);">
+        <i data-lucide="alert-octagon" class="w-8 h-8 text-white"></i>
+    </button>
+
+    <div id="ivrsModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-white">IVRS System</h2>
+                <button onclick="closeIVRS()" class="text-3xl text-gray-400 hover:text-white">&times;</button>
+            </div>
+            <div id="ivrsDisplay" class="mb-6 p-4 rounded-xl min-h-32" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(59, 130, 246, 0.3);">
+                <p class="text-white">Welcome to Railway IVRS. Press:</p>
+                <p class="text-gray-300 mt-2">1 - Train Status</p>
+                <p class="text-gray-300">2 - Platform Info</p>
+                <p class="text-gray-300">3 - Ticket Booking</p>
+                <p class="text-gray-300">4 - Lost & Found</p>
+                <p class="text-gray-300">0 - Speak to Operator</p>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+                <button onclick="pressIVRS('1')" class="keypad-btn px-4 py-3 rounded-xl font-bold text-xl">1</button>
+                <button onclick="pressIVRS('2')" class="keypad-btn px-4 py-3 rounded-xl font-bold text-xl">2</button>
+                <button onclick="pressIVRS('3')" class="keypad-btn px-4 py-3 rounded-xl font-bold text-xl">3</button>
+                <button onclick="pressIVRS('4')" class="keypad-btn px-4 py-3 rounded-xl font-bold text-xl">4</button>
+                <button onclick="pressIVRS('5')" class="keypad-btn px-4 py-3 rounded-xl font-bold text-xl">5</button>
+                <button onclick="pressIVRS('6')" class="keypad-btn px-4 py-3 rounded-xl font-bold text-xl">6</button>
+                <button onclick="pressIVRS('7')" class="keypad-btn px-4 py-3 rounded-xl font-bold text-xl">7</button>
+                <button onclick="pressIVRS('8')" class="keypad-btn px-4 py-3 rounded-xl font-bold text-xl">8</button>
+                <button onclick="pressIVRS('9')" class="keypad-btn px-4 py-3 rounded-xl font-bold text-xl">9</button>
+                <button onclick="pressIVRS('*')" class="keypad-btn px-4 py-3 rounded-xl font-bold text-xl">*</button>
+                <button onclick="pressIVRS('0')" class="keypad-btn px-4 py-3 rounded-xl font-bold text-xl">0</button>
+                <button onclick="pressIVRS('#')" class="keypad-btn px-4 py-3 rounded-xl font-bold text-xl">#</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sosModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-red-400 flex items-center">
+                    <i data-lucide="alert-octagon" class="w-6 h-6 mr-2"></i>
+                    Emergency SOS
+                </h2>
+                <button onclick="closeSOS()" class="text-3xl text-gray-400 hover:text-white">&times;</button>
+            </div>
+            <p class="text-sm text-gray-300 mb-4">Select emergency type and send alert to railway staff</p>
+            <div class="space-y-3 mb-4">
+                <button onclick="selectSOS('medical')" class="w-full glass-strong hover:bg-red-500 hover:bg-opacity-30 px-4 py-3 rounded-xl text-left transition flex items-center space-x-3">
+                    <i data-lucide="heart-pulse" class="w-6 h-6 text-red-400"></i>
+                    <div><div class="font-semibold text-white">Medical Emergency</div><div class="text-xs text-gray-400">Health issue, injury</div></div>
+                </button>
+                <button onclick="selectSOS('safety')" class="w-full glass-strong hover:bg-orange-500 hover:bg-opacity-30 px-4 py-3 rounded-xl text-left transition flex items-center space-x-3">
+                    <i data-lucide="shield-alert" class="w-6 h-6 text-orange-400"></i>
+                    <div><div class="font-semibold text-white">Safety Threat</div><div class="text-xs text-gray-400">Suspicious activity</div></div>
+                </button>
+                <button onclick="selectSOS('other')" class="w-full glass-strong hover:bg-blue-500 hover:bg-opacity-30 px-4 py-3 rounded-xl text-left transition flex items-center space-x-3">
+                    <i data-lucide="help-circle" class="w-6 h-6 text-blue-400"></i>
+                    <div><div class="font-semibold text-white">Other Emergency</div><div class="text-xs text-gray-400">Urgent help needed</div></div>
+                </button>
+            </div>
+            <div id="sosStatus" class="text-sm text-gray-400 mb-4 min-h-[20px]"></div>
+        </div>
+    </div>
+
+    <div id="rulesModal" class="modal">
+        <div class="modal-content" style="max-height: 90vh; overflow-y: auto;">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-white">Railway Passenger Rules</h2>
+                <button onclick="closeRules()" class="text-3xl text-gray-400 hover:text-white">&times;</button>
+            </div>
+            <div class="space-y-4 text-sm">
+                <div class="glass-strong rounded-xl p-4">
+                    <div class="flex items-start space-x-3">
+                        <i data-lucide="ticket" class="w-6 h-6 text-green-400"></i>
+                        <div><h3 class="font-bold text-green-400 text-lg">Valid Ticket</h3><p class="text-gray-300 mt-1">Always carry a valid ticket. Ticketless travel can result in heavy fines.</p></div>
+                    </div>
+                </div>
+                <div class="glass-strong rounded-xl p-4">
+                    <div class="flex items-start space-x-3">
+                        <i data-lucide="luggage" class="w-6 h-6 text-orange-400"></i>
+                        <div><h3 class="font-bold text-orange-400 text-lg">Luggage Limit</h3><p class="text-gray-300 mt-1">Free luggage allowance varies by class. Excess luggage may incur charges.</p></div>
+                    </div>
+                </div>
+                <div class="glass-strong rounded-xl p-4">
+                    <div class="flex items-start space-x-3">
+                        <i data-lucide="cigarette-off" class="w-6 h-6 text-gray-400"></i>
+                        <div><h3 class="font-bold text-gray-400 text-lg">No Smoking</h3><p class="text-gray-300 mt-1">Smoking is strictly prohibited in all railway premises and trains.</p></div>
+                    </div>
+                </div>
+                <div class="glass-strong rounded-xl p-4">
+                    <div class="flex items-start space-x-3">
+                        <i data-lucide="volume-x" class="w-6 h-6 text-purple-400"></i>
+                        <div><h3 class="font-bold text-purple-400 text-lg">Silent Hours</h3><p class="text-gray-300 mt-1">After 10 PM, loud talking, music, or phone calls are not allowed.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="chatbotModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-white">Railway Assistant</h2>
+                <button onclick="closeChatbot()" class="text-3xl text-gray-400 hover:text-white">&times;</button>
+            </div>
+            <div id="chatMessages" class="space-y-3 mb-4" style="min-height: 300px; max-height: 400px; overflow-y: auto;">
+                <div class="flex items-start space-x-2">
+                    <div class="bg-blue-500 bg-opacity-20 border border-blue-400 rounded-lg p-3 max-w-xs">
+                        <p class="text-sm text-white">Hello! I'm your railway assistant. How can I help you today?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex space-x-3">
+                <input id="chatInput" placeholder="Type your message..." class="flex-1 px-4 py-3 rounded-xl text-white" style="background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(59, 130, 246, 0.3);">
+                <button onclick="sendMessage()" class="btn-gradient px-6 py-3 text-white font-semibold rounded-xl">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        function openChatbot() {
+            document.getElementById('chatbotModal').classList.add('active');
+        }
+        
+        function closeChatbot() {
+            document.getElementById('chatbotModal').classList.remove('active');
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+            
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML += `
+                <div class="flex items-start space-x-2 justify-end">
+                    <div class="bg-gradient-to-r from-blue-500 to-orange-500 rounded-lg p-3 max-w-xs">
+                        <p class="text-sm text-white">${msg}</p>
+                    </div>
+                </div>
+            `;
+            
+            input.value = '';
+            
+            setTimeout(() => {
+                const responses = [
+                    "Train 12628 Karnataka Express is on time and will arrive at Platform 3 at 14:30.",
+                    "The next train to Bangalore departs at 16:45 from Platform 1.",
+                    "Platform facilities include waiting rooms, restrooms, and food stalls.",
+                    "You can find the ticket counter on the ground floor near entrance 2."
+                ];
+                const response = responses[Math.floor(Math.random() * responses.length)];
+                chatMessages.innerHTML += `
+                    <div class="flex items-start space-x-2">
+                        <div class="bg-blue-500 bg-opacity-20 border border-blue-400 rounded-lg p-3 max-w-xs">
+                            <p class="text-sm text-white">${response}</p>
+                        </div>
+                    </div>
+                `;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 500);
+        }
+        
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+        
+        function openIVRS() {
+            document.getElementById('ivrsModal').classList.add('active');
+            lucide.createIcons();
+        }
+        
+        function closeIVRS() {
+            document.getElementById('ivrsModal').classList.remove('active');
+        }
+        
+        function pressIVRS(key) {
+            const display = document.getElementById('ivrsDisplay');
+            const responses = {
+                '1': '<p class="text-white">Train Status Service</p><p class="text-gray-300 mt-2">All trains are running as per schedule. Train 12430 is delayed by 15 minutes.</p>',
+                '2': '<p class="text-white">Platform Information</p><p class="text-gray-300 mt-2">Platform 1-6 are operational. Platform 3 is under maintenance.</p>',
+                '3': '<p class="text-white">Ticket Booking</p><p class="text-gray-300 mt-2">Please visit www.irctc.co.in or use the mobile app for ticket booking.</p>',
+                '4': '<p class="text-white">Lost & Found</p><p class="text-gray-300 mt-2">Lost items can be reported at the station master office on Platform 1.</p>',
+                '0': '<p class="text-white">Connecting to Operator...</p><p class="text-gray-300 mt-2">Please wait while we connect you to our customer service representative.</p>'
+            };
+            display.innerHTML = responses[key] || '<p class="text-white">Invalid option. Please try again.</p>';
+        }
+        
+        function openSOS() {
+            document.getElementById('sosModal').classList.add('active');
+            document.getElementById('sosStatus').textContent = '';
+            lucide.createIcons();
+        }
+        
+        function closeSOS() {
+            document.getElementById('sosModal').classList.remove('active');
+        }
+        
+        function selectSOS(type) {
+            const status = document.getElementById('sosStatus');
+            status.innerHTML = '<span class="text-green-400">✓ Emergency alert sent! Help is on the way.</span>';
+            setTimeout(() => closeSOS(), 2000);
+        }
+        
+        function openRules() {
+            document.getElementById('rulesModal').classList.add('active');
+            lucide.createIcons();
+        }
+        
+        function closeRules() {
+            document.getElementById('rulesModal').classList.remove('active');
+        }
+        
+        function toggleStops(id) {
+            const row = document.getElementById(id);
+            row.style.display = row.style.display === 'none' ? 'table-row' : 'none';
+        }
+    </script>
+</body>
+</html>

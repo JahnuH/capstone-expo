@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Railway Translation Engine - Demo</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; scroll-behavior: smooth; }
+    body { font-family:'Poppins',sans-serif; background: #0f172a; min-height:100vh; color:#e2e8f0; overflow-x:hidden; }
+    nav { background: rgba(9,26,46,0.92); backdrop-filter: blur(12px); border-bottom:1px solid rgba(255,255,255,0.1); position:fixed; width:100%; top:0; z-index:60; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    .hero-section { min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; flex-direction:column; padding-top:82px; color:white; position:relative; overflow:hidden; background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
+    .hero-title { font-size: clamp(2.2rem,5vw,3.8rem); font-weight:800; background: linear-gradient(135deg,#ffffff 0%, #f0f0f0 50%, #ff9933 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6)); }
+    .hero-underline { width:190px; height:4px; margin:1rem auto 1.6rem; border-radius:8px; background: linear-gradient(90deg,#ff9933,#ffffff,#138808); animation: pulseLine 3s ease-in-out infinite; }
+    @keyframes pulseLine { 0%,100%{transform:scaleX(1);opacity:.8} 50%{transform:scaleX(1.25);opacity:1} }
+    .btn-primary { background: linear-gradient(90deg,#134F90,#FF9933); color:white; transition: transform .25s ease, box-shadow .25s ease; box-shadow: 0 8px 30px rgba(19,79,144,0.18); }
+    .btn-primary:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 16px 60px rgba(255,153,51,0.28); }
+    .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.3); transition: transform .25s ease, box-shadow .25s ease; }
+    .glass:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 16px 60px rgba(255,255,255,0.15); }
+    .feature-card { background: rgba(255,255,255,0.08); backdrop-filter: blur(14px); border-radius: 1rem; border: 1px solid rgba(255,255,255,0.12); transition: all 0.4s ease; color: #f1f5f9; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
+    .feature-card:hover { transform: translateY(-8px) scale(1.03); box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55); background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); }
+  </style>
+</head>
+<body>
+    <nav>
+      <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+            <i data-lucide="train" class="w-6 h-6 text-white"></i>
+          </div>
+          <span class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Railway Translation Engine</span>
+        </div>
+        <div class="flex items-center space-x-6">
+          <a href="user.html" class="btn-primary px-6 py-2 rounded-full text-white font-semibold">User Portal</a>
+          <a href="admin.html" class="glass px-6 py-2 rounded-full text-white font-semibold">Admin Panel</a>
+        </div>
+      </div>
+    </nav>
+
+    <section class="hero-section">
+      <div class="container mx-auto text-center relative">
+        <h1 class="hero-title mb-6">Railway Translation Engine</h1>
+        <div class="hero-underline"></div>
+        <p class="text-2xl text-white/90 mb-4 max-w-3xl mx-auto">Breaking Language Barriers in Public Transportation</p>
+        <p class="text-lg text-white/75 mb-12 max-w-2xl mx-auto">Real-time multilingual announcements powered by AI</p>
+        <div class="flex flex-wrap justify-center gap-6 mb-16">
+          <a href="user.html" class="btn-primary px-10 py-4 rounded-full text-white font-semibold text-lg shadow-2xl">User Portal</a>
+          <a href="admin.html" class="glass px-10 py-4 rounded-full text-white font-semibold text-lg shadow-2xl">Admin Panel</a>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+          <div class="glass rounded-2xl p-6 text-center"><div class="text-3xl font-bold text-blue-400">6</div><div class="text-gray-400">Languages</div></div>
+          <div class="glass rounded-2xl p-6 text-center"><div class="text-3xl font-bold text-purple-400">3</div><div class="text-gray-400">Core Modules</div></div>
+          <div class="glass rounded-2xl p-6 text-center"><div class="text-3xl font-bold text-pink-400">∞</div><div class="text-gray-400">Possibilities</div></div>
+          <div class="glass rounded-2xl p-6 text-center"><div class="text-3xl font-bold text-green-400">AI</div><div class="text-gray-400">Powered</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 px-6" style="background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);">
+      <div class="container mx-auto">
+        <h2 class="text-5xl font-bold text-center mb-16"><span class="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Powerful Features</span></h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="feature-card p-8 text-center"><i data-lucide="languages" class="w-10 h-10 mx-auto mb-4 text-blue-400"></i><h3 class="text-2xl font-bold mb-3 text-blue-400">Multi-Language Translation</h3><p>Instant translation across 6 languages: English, Hindi, Kannada, Telugu, Tamil, and French</p></div>
+          <div class="feature-card p-8 text-center"><i data-lucide="volume-2" class="w-10 h-10 mx-auto mb-4 text-purple-400"></i><h3 class="text-2xl font-bold mb-3 text-purple-400">Text-to-Speech</h3><p>Natural-sounding audio announcements with intelligent caching for instant playback</p></div>
+          <div class="feature-card p-8 text-center"><i data-lucide="radio" class="w-10 h-10 mx-auto mb-4 text-pink-400"></i><h3 class="text-2xl font-bold mb-3 text-pink-400">Smart Announcements</h3><p>Pre-built templates for arrivals, departures, delays, and platform changes</p></div>
+          <div class="feature-card p-8 text-center"><i data-lucide="bot" class="w-10 h-10 mx-auto mb-4 text-green-400"></i><h3 class="text-2xl font-bold mb-3 text-green-400">AI Chatbot</h3><p>Gemini-powered assistant for train schedules, delays, and station information</p></div>
+          <div class="feature-card p-8 text-center"><i data-lucide="phone" class="w-10 h-10 mx-auto mb-4 text-yellow-400"></i><h3 class="text-2xl font-bold mb-3 text-yellow-400">IVRS System</h3><p>Interactive voice response with 10 menu options for comprehensive station services</p></div>
+          <div class="feature-card p-8 text-center"><i data-lucide="train" class="w-10 h-10 mx-auto mb-4 text-red-400"></i><h3 class="text-2xl font-bold mb-3 text-red-400">Live Train Tracking</h3><p>Real-time train status, delays, platform info, and intelligent suggestions</p></div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="py-8 px-6 border-t border-gray-700 text-center">
+      <p class="text-gray-400">Railway Translation Engine © 2025 | Frontend Demo</p>
+    </footer>
+
+  <script>lucide.createIcons();</script>
+</body>
+</html>
