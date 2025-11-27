@@ -42,9 +42,19 @@
                         <p class="text-xs text-gray-400">Automated Control Panel</p>
                     </div>
                 </a>
-                <a href="index.html" class="glass-strong px-4 py-2 rounded-full text-white font-semibold hover:bg-red-500 hover:bg-opacity-20 flex items-center space-x-2">
-                    <i data-lucide="log-out" class="w-4 h-4"></i><span>Logout</span>
-                </a>
+                <div class="flex items-center space-x-4">
+                    <select id="adminLangSelect" onchange="changeAdminLanguage()" class="glass-strong px-3 py-2 rounded-full text-white text-sm">
+                        <option value="en">EN</option>
+                        <option value="hi">हिं</option>
+                        <option value="kn">ಕನ್</option>
+                        <option value="te">తె</option>
+                        <option value="ta">த</option>
+                        <option value="fr">FR</option>
+                    </select>
+                    <a href="index.html" class="glass-strong px-4 py-2 rounded-full text-white font-semibold hover:bg-red-500 hover:bg-opacity-20 flex items-center space-x-2">
+                        <i data-lucide="log-out" class="w-4 h-4"></i><span>Logout</span>
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
@@ -248,6 +258,34 @@
     </div>
 
     <script>
+        async function getSmartSuggestion(context) {
+            const API_KEY = 'AIzaSyDTq5NgWdbvI3znraPrASnogjGGD-uI3_E';
+            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${API_KEY}`;
+            
+            const prompt = `Generate a railway station announcement for: ${context}. Keep it professional and concise.`;
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: prompt
+                            }]
+                        }]
+                    })
+                });
+                
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                return context;
+            }
+        }
+        
         lucide.createIcons();
         
         function switchTab(tab) {
@@ -270,6 +308,18 @@
         }
         
         function confirmAnnounce() {
+            const text = document.getElementById('announceText').textContent;
+            const languages = {'en':'en-US','hi':'hi-IN','kn':'kn-IN','te':'te-IN','ta':'ta-IN','fr':'fr-FR'};
+            
+            Object.values(languages).forEach((lang, i) => {
+                setTimeout(() => {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = lang;
+                    utterance.rate = 0.9;
+                    speechSynthesis.speak(utterance);
+                }, i * 3000);
+            });
+            
             alert('Announcement broadcasted successfully in all selected languages!');
             closeAnnounceModal();
         }
@@ -281,6 +331,13 @@
                 return;
             }
             showAnnounceModal(text);
+        }
+        
+        function speakText(text, lang = 'en-US') {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            utterance.rate = 0.9;
+            speechSynthesis.speak(utterance);
         }
         
         document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -302,6 +359,50 @@
             btn.style.border = '1px solid rgba(255, 255, 255, 0.2)';
             btn.style.transition = 'all 0.3s ease';
         });
+        
+        async function translateText(text, targetLang) {
+            if (targetLang === 'en') return text;
+            
+            const API_KEY = 'AIzaSyDTq5NgWdbvI3znraPrASnogjGGD-uI3_E';
+            const langNames = {'hi':'Hindi','kn':'Kannada','te':'Telugu','ta':'Tamil','fr':'French'};
+            const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${API_KEY}`;
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        contents: [{parts: [{text: `Translate this to ${langNames[targetLang]}: "${text}". Return only the translation, no explanations.`}]}]
+                    })
+                });
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text.replace(/["]/g, '');
+            } catch (error) {
+                return text;
+            }
+        }
+        
+        async function changeAdminLanguage() {
+            const targetLang = document.getElementById('adminLangSelect').value;
+            if (targetLang === 'en') {
+                location.reload();
+                return;
+            }
+            
+            const elements = document.querySelectorAll('h1, h2, h3, p, span, button, div, label');
+            for (let el of elements) {
+                if (el.textContent.trim() && !el.querySelector('i') && el.textContent.length < 100 && !el.classList.contains('text-3xl')) {
+                    const text = el.textContent.trim();
+                    if (text && !text.match(/^[0-9:]+$/)) {
+                        try {
+                            const translated = await translateText(text, targetLang);
+                            el.textContent = translated;
+                        } catch (e) {}
+                    }
+                }
+            }
+            lucide.createIcons();
+        }
     </script>
 </body>
 </html>
